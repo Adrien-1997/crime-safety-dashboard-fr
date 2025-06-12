@@ -2,6 +2,8 @@
 
 Ce projet propose une analyse statistique complète des infractions enregistrées par la police et la gendarmerie françaises entre 2016 et 2024, à partir des données officielles disponibles sur data.gouv.fr. Il s’appuie sur une application Streamlit interactive permettant d’explorer les dynamiques territoriales et temporelles de la délinquance à l’échelle départementale et régionale.
 
+👉 [Accéder à l'application Streamlit déployée](https://dashboard-delinquance-france-fnaeh3gqf9axpj7weuykwh.streamlit.app/)
+
 ## Objectifs
 
 - Fournir un outil d'exploration et de visualisation rigoureux et pédagogique des données de délinquance.
