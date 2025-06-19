@@ -92,6 +92,12 @@ indicateurs = sorted(df['indicateur'].unique())
 annee_select = st.sidebar.selectbox("Année", annees)
 indicateur_select = st.sidebar.selectbox("Indicateur", indicateurs)
 
+st.set_page_config(
+    page_title="Délinquance en France",
+    layout="wide",
+    initial_sidebar_state="expanded"  # 👈 ceci force l'ouverture
+)
+
 def footer():
     st.markdown("---")
     st.markdown(
