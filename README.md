@@ -1,47 +1,126 @@
-# Dashboard interactif – Délinquance en France (2016–2024)
+# Crime & Safety Dashboard — France (2016–2024)
 
-Ce projet propose une analyse statistique complète des infractions enregistrées par la police et la gendarmerie françaises entre 2016 et 2024, à partir des données officielles disponibles sur data.gouv.fr. Il s’appuie sur une application Streamlit interactive permettant d’explorer les dynamiques territoriales et temporelles de la délinquance à l’échelle départementale et régionale.
+Turn official police & gendarmerie records into **clear, per-1,000-inhabitants** indicators for decision-makers.  
+*Goal:* fast situational awareness, anomaly surfacing, and simple forecasting.
 
-👉 [Accéder à l'application Streamlit déployée](https://dashboard-delinquance-france-fnaeh3gqf9axpj7weuykwh.streamlit.app/)
+---
 
-## Objectifs
+## (1) Problem
+Public safety teams struggle to get a unified, comparable view of incidents across time and geography.  
+This app provides:
+- Consistent **rates per 1,000 inhabitants** (no ambiguous %)
+- Spatial & temporal exploration
+- Anomaly detection to flag unusual patterns
+- Lightweight forecasting (baseline)
 
-- Fournir un outil d'exploration et de visualisation rigoureux et pédagogique des données de délinquance.
-- Comparer les départements et régions selon des indicateurs normalisés (nombre pour 1000 habitants).
-- Identifier les dynamiques temporelles et les ruptures statistiques.
-- Segmenter les territoires selon leurs profils multi-indicateurs (ACP + clustering).
-- Détecter les départements hors norme à l’aide de modèles non supervisés (Isolation Forest).
-- Projeter les tendances pour l’année 2025 via des régressions linéaires locales.
+---
 
-## Données
+## (2) Data
+- **Incidents:** official police/gendarmerie records (monthly granularity)  
+- **Population:** latest INSEE reference to normalize rates  
+- **Geographies:** commune/department codes (INSEE)
 
-- **Source** : [data.gouv.fr – Bases statistiques de la délinquance enregistrée par la police et la gendarmerie](https://www.data.gouv.fr/fr/datasets/bases-statistiques-communale-departementale-et-regionale-de-la-delinquance-enregistree-par-la-police-et-la-gendarmerie-nationales/)
-- **Période couverte** : 2016 à 2024
-- **Granularité** : commune, département, région
-- **Indicateurs** : atteintes aux personnes, atteintes aux biens, violences sexuelles, vols, etc.
-- **Population de référence** : INSEE (millésime 2024)
+> Raw files are **not** tracked in git. See `data/README.md` for download instructions.
 
-## Fonctionnalités de l’application
+**Important:** All indicators are expressed as **number per 1,000 inhabitants** (no symbols, no percentages) for clarity and comparability.
 
-- **Vue brute** : infractions totales (volume absolu) par département.
-- **Indicateurs normalisés** : nombre pour 1000 habitants, comparaisons équitables.
-- **Évolution temporelle** : visualisation des tendances par département ou indicateur.
-- **Comparaison régionale** : évolution agrégée et heatmaps régionales.
-- **Clustering territorial** : classification des départements (ACP + K-means).
-- **Détection d’anomalies** : identification automatique des départements hors normes.
-- **Prévisions 2025** : projection des infractions par département via régression.
+---
 
-## Technologies
+## (3) Approach
+- **Ingestion & Cleaning:** harmonize schemas, map geo codes, handle missingness  
+- **Normalization:** compute rates per 1,000 inhabitants for every indicator  
+- **Exploration:** spatio-temporal drill-downs, top movers, seasonality hints  
+- **Anomaly detection:** IsolationForest with ROC-aware threshold selection  
+- **Forecasting:** simple time-series baselines to set expectations *(WIP)*
 
-- Python
-- Streamlit
-- Pandas, NumPy, Scikit-learn
-- Plotly (visualisations interactives)
-- GeoJSON pour les cartes choroplèthes
+---
 
-## Installation locale
+## (4) App (Streamlit)
+- **Filters:** period, geography, category  
+- **KPIs:** level, trend, volatility  
+- **Charts:** time series, YoY deltas, heatmaps, “anomaly spotlight”  
+- **Download:** CSV extracts for further analysis
 
-1. Cloner le dépôt :
-```bash
-git clone https://github.com/votre-utilisateur/dashboard-delinquance-france.git
-cd dashboard-delinquance-france
+---
+
+## (5) Reproduce
+~~~bash
+# Python 3.11+ recommended
+python -m venv .venv
+
+# Windows
+.venv\Scripts\activate
+
+# macOS/Linux
+# source .venv/bin/activate
+
+pip install -r requirements.txt
+
+# Optional: fetch data (see data/README.md)
+# python data/download.py
+
+# Run the app
+streamlit run app.py
+~~~
+
+---
+
+## (6) Project structure
+~~~text
+.
+├─ app.py
+├─ src/
+│  ├─ io/                 # loaders, readers, caching
+│  ├─ features/           # transforms, rate computations
+│  ├─ models/             # anomaly detection, baselines
+│  └─ viz/                # plotting helpers
+├─ data/                  # not versioned; see README for sources
+│  └─ README.md
+├─ assets/
+│  └─ preview.png         # 1200x630 OG image
+├─ requirements.txt
+├─ .gitignore
+└─ LICENSE
+~~~
+
+---
+
+## (7) Evaluation notes
+- Anomalies validated with **precision/recall curves** and **cost-aware** thresholds.  
+- Prefer **interpretability** over complex models for operational adoption.
+
+---
+
+## (8) Next steps
+- [ ] Weekly aggregation toggle  
+- [ ] Geo tiles for communes (clustered markers)  
+- [ ] Parameter panel for IsolationForest (contamination, seeds)  
+- [ ] CI job to refresh cached datasets monthly
+
+---
+
+## (9) Credits
+Author: Adrien Morel (Paris). Color palette: blue–orange for contrast and accessibility.  
+License: **MIT**.
+
+---
+
+### Appendix A — Minimal `requirements.txt`
+~~~text
+streamlit
+pandas
+numpy
+scikit-learn
+matplotlib
+plotly
+pyyaml
+~~~
+
+### Appendix B — Minimal `.gitignore`
+~~~gitignore
+.venv/
+__pycache__/
+.ipynb_checkpoints/
+data/*
+!data/README.md
+~~~
